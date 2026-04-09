@@ -1,0 +1,99 @@
+conky.config = {
+    -- Positioning
+    alignment           = 'top_right',
+    gap_x               = 20,
+    gap_y               = 50,
+
+    -- Window
+    own_window          = true,
+    own_window_type     = 'desktop',
+    own_window_transparent = false,
+    own_window_argb_visual = true,
+    own_window_argb_value  = 240,
+    own_window_colour   = '111111',
+    own_window_hints    = 'undecorated,below,sticky,skip_taskbar,skip_pager',
+
+    -- Appearance
+    draw_borders        = false,
+    draw_outline        = false,
+    draw_shades         = false,
+    border_inner_margin = 6,
+    border_outer_margin = 0,
+
+    -- Font
+    use_xft             = true,
+    font                = 'Monospace:Bold:size=9',
+    xftalpha            = 1,
+
+    -- Color palette (alex-pv01.github.io dark theme)
+    default_color       = 'e0e0e0',  -- primary text
+    color0              = 'FF4F00',  -- orange  (section headers)
+    color1              = '00b0ff',  -- blue    (labels, bars)
+    color2              = '228B22',  -- green   (memory, battery bars)
+    color3              = '666666',  -- gray    (secondary text, sub-dividers)
+    color4              = 'ffffff',  -- white   (key values)
+
+    -- Updates
+    update_interval     = 2.0,
+    double_buffer       = true,
+    no_buffers          = true,
+    cpu_avg_samples     = 4,
+    net_avg_samples     = 2,
+    temperature_unit    = 'celsius',
+    short_units         = true,
+    top_name_width      = 12,
+
+    -- Size
+    minimum_width       = 300,
+    maximum_width       = 320,
+
+    -- Lua helpers
+    lua_load            = '<<<INSTALL_DIR>>>/bars.lua',
+}
+
+conky.text = [[
+${color0}══[ SYSTEM ]════════════════════════════════${color}
+  ${color1}Host    ·${color}  ${color4}${nodename}${color}
+  ${color1}OS      ·${color}  ${color3}<<<OS_NAME>>>${color}
+  ${color1}Kernel  ·${color}  ${color3}${kernel}${color}
+  ${color1}Uptime  ·${color}  ${color4}${uptime}${color}
+
+${color0}══[ COMPUTE ]═══════════════════════════════${color}
+  ${color3}·· CPU  <<<CPU_MODEL>>> ───────────────────${color}
+  ${cpugraph cpu0 35,285 228B22 FF4F00}${goto 30}${voffset 15}${color1}Usage${color}  ${color4}${cpu cpu0}%${color}
+${voffset -20}  ${execgraph "sort -rn /sys/devices/system/cpu/cpu[0-9]*/cpufreq/scaling_cur_freq 2>/dev/null | head -1 | awk '{print int($1*100/<<<CPU_BOOST_KHZ>>>)}'" 35,285 228B22 FF4F00}${goto 30}${voffset 15}${color1}Clock${color}  ${color4}${lua cpu_clock} / <<<CPU_BOOST_GHZ_DISPLAY>>> GHz${color}
+${voffset -20}  ${execgraph "awk '{v=int($1/1000-50)*2; print (v<0?0:v)}' /sys/class/hwmon/hwmon<<<CPU_HWMON>>>/temp1_input" 35,285 228B22 FF4F00 100}
+${voffset -20}  ${goto 30}${voffset -15}${color1}Temp${color}  ${color4}${hwmon <<<CPU_HWMON>>> temp 1}°C${color}  ${color3}Fan · ${hwmon <<<FAN_HWMON>>> fan <<<CPU_FAN_INPUT>>>} rpm${color}
+<<<GPU_SECTION>>>
+
+${color0}══[ MEMORY · STORAGE ]══════════════════════${color}
+  ${color1}RAM   ·${color}  [${color2}${lua mem_bar}${color}]  ${color4}${memperc}%${color}
+  ${color3}${mem} / ${memmax}${color}
+  ${color1}Swap  ·${color}  [${color2}${lua swap_bar}${color}]  ${color4}${swapperc}%${color}
+  ${color3}${swap} / ${swapmax}${color}
+  ${color3}────────────────────────────────────────${color}
+  ${color1}Root  ·${color}  [${color1}${lua disk_bar}${color}]  ${color4}${fs_used_perc /}%${color}
+  ${color3}${fs_used /} / ${fs_size /}${color}
+<<<EXT_DRIVE_LINE>>>
+
+${color0}══[ PROCESSES ]═════════════════════════════${color}
+  ${color1}Total  ·${color}  ${color4}${processes}${color}  ${color3}Running · ${color4}${running_processes}${color}
+  ${color3}·· Top CPU ───────────────────────────────${color}
+  ${color4}${top name 1}${color1}${alignr}${top cpu 1}%${color}
+  ${color4}${top name 2}${color1}${alignr}${top cpu 2}%${color}
+  ${color4}${top name 3}${color1}${alignr}${top cpu 3}%${color}
+  ${color3}·· Top Memory ────────────────────────────${color}
+  ${color4}${top_mem name 1}${color2}${alignr}${top_mem mem 1}%${color}
+  ${color4}${top_mem name 2}${color2}${alignr}${top_mem mem 2}%${color}
+  ${color4}${top_mem name 3}${color2}${alignr}${top_mem mem 3}%${color}
+<<<TOP_VRAM_SECTION>>>
+
+${color0}══[ CONNECTIVITY ]══════════════════════════${color}
+  ${color3}·· Battery ──────────────────────────────${color}
+  ${color1}Charge  ·${color}  [${color2}${lua bat_bar}${color}]  ${color4}${battery_percent BAT0}%${color}
+  ${color1}Status  ·${color}  ${color4}${battery_status BAT0}${color}
+  ${color3}·· Network ──────────────────────────────${color}
+  ${color1}SSID    ·${color}  ${color4}${wireless_essid <<<WIFI_IFACE>>>}${color}
+  ${color1}Signal  ·${color}  [${color1}${lua wifi_bar}${color}]  ${color4}${wireless_link_qual_perc <<<WIFI_IFACE>>>}%${color}
+  ${color1}WiFi    ·${color}  ${color3}↑${color} ${color4}${upspeed <<<WIFI_IFACE>>>}${color}  ${color3}↓${color} ${color4}${downspeed <<<WIFI_IFACE>>>}${color}
+<<<ETH_LINES>>>]]

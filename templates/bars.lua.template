@@ -1,0 +1,57 @@
+-- Pixel-art bar helpers for conky
+local BAR_WIDTH = 14
+
+local function make_bar(pct)
+    pct = math.max(0, math.min(100, tonumber(pct) or 0))
+    local n = math.floor(pct / 100 * BAR_WIDTH)
+    return string.rep("█", n) .. string.rep("░", BAR_WIDTH - n)
+end
+
+function conky_cpu_bar()  return make_bar(conky_parse("${cpu cpu0}")) end
+function conky_mem_bar()  return make_bar(conky_parse("${memperc}")) end
+function conky_disk_bar() return make_bar(conky_parse("${fs_used_perc /}")) end
+function conky_bat_bar()  return make_bar(conky_parse("${battery_percent BAT0}")) end
+function conky_wifi_bar() return make_bar(conky_parse("${wireless_link_qual_perc <<<WIFI_IFACE>>>}")) end
+function conky_swap_bar() return make_bar(conky_parse("${swapperc}")) end
+
+function conky_ext_bar()
+    return make_bar(conky_parse("${fs_used_perc <<<EXT_DRIVE_PATH>>>}"))
+end
+
+-- CPU clock: max frequency across all cores vs boost limit
+local CPU_BOOST_GHZ = <<<CPU_BOOST_GHZ>>>
+
+local function _max_cur_freq_ghz()
+    local max_khz = 0
+    for i = 0, 15 do
+        local f = io.open(string.format("/sys/devices/system/cpu/cpu%d/cpufreq/scaling_cur_freq", i))
+        if f then
+            local v = tonumber(f:read("*l")) or 0
+            if v > max_khz then max_khz = v end
+            f:close()
+        end
+    end
+    return max_khz / 1e6
+end
+
+function conky_cpu_clock()
+    return string.format("%.1f", _max_cur_freq_ghz())
+end
+
+function conky_throttle_bar()
+    local cur    = _max_cur_freq_ghz()
+    local load   = tonumber(conky_parse("${cpu cpu0}")) or 0
+    local ratio  = cur / CPU_BOOST_GHZ
+    local filled = math.floor(ratio * BAR_WIDTH)
+    local empty  = BAR_WIDTH - filled
+    if load >= 20 and ratio < 0.75 then
+        return string.rep("▓", filled) .. string.rep("░", empty)
+    end
+    return string.rep("█", filled) .. string.rep("░", empty)
+end
+
+<<<AMD_FUNCTIONS>>>
+
+<<<NVIDIA_FUNCTIONS>>>
+
+<<<GPU_TOP_FUNCTIONS>>>
