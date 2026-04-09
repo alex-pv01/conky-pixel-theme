@@ -53,10 +53,10 @@ conky.config = {
 
 conky.text = [[
 ${color0}══[ SYSTEM ]════════════════════════════════${color}
-  ${color1}Host    ·${color}  ${color4}${nodename}${color}
-  ${color1}OS      ·${color}  ${color3}<<<OS_NAME>>>${color}
-  ${color1}Kernel  ·${color}  ${color3}${kernel}${color}
-  ${color1}Uptime  ·${color}  ${color4}${uptime}${color}
+  ${color1}Host    ·${color}  ${color4}${nodename}${color}${alignr}${lua_parse pixel_sprite 1}${color}
+  ${color1}OS      ·${color}  ${color3}<<<OS_NAME>>>${color}${alignr}${lua_parse pixel_sprite 2}${color}
+  ${color1}Kernel  ·${color}  ${color3}${kernel}${color}${alignr}${lua_parse pixel_sprite 3}${color}
+  ${color1}Uptime  ·${color}  ${color4}${uptime}${color}${alignr}${lua_parse pixel_sprite 4}${color}
 
 ${color0}══[ COMPUTE ]═══════════════════════════════${color}
   ${color3}·· CPU  <<<CPU_MODEL>>> ───────────────────${color}
