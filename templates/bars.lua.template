@@ -10,7 +10,20 @@ end
 function conky_cpu_bar()  return make_bar(conky_parse("${cpu cpu0}")) end
 function conky_mem_bar()  return make_bar(conky_parse("${memperc}")) end
 function conky_disk_bar() return make_bar(conky_parse("${fs_used_perc /}")) end
-function conky_bat_bar()  return make_bar(conky_parse("${battery_percent BAT0}")) end
+local function _bat_read(file)
+    local f = io.open("/sys/class/power_supply/BAT0/" .. file)
+    local v = f and f:read("*l") or ""
+    if f then f:close() end
+    return v
+end
+
+function conky_bat_bar()     return make_bar(tonumber(_bat_read("capacity")) or 0) end
+function conky_bat_percent() return _bat_read("capacity") end
+function conky_bat_status()
+    local s = _bat_read("status")
+    if s == "Not charging" then return "Full (AC)" end
+    return s
+end
 function conky_wifi_bar() return make_bar(conky_parse("${wireless_link_qual_perc <<<WIFI_IFACE>>>}")) end
 function conky_swap_bar() return make_bar(conky_parse("${swapperc}")) end
 

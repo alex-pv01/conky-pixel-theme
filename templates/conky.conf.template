@@ -90,8 +90,8 @@ ${color0}══[ PROCESSES ]═════════════════�
 
 ${color0}══[ CONNECTIVITY ]══════════════════════════${color}
   ${color3}·· Battery ──────────────────────────────${color}
-  ${color1}Charge  ·${color}  [${color2}${lua bat_bar}${color}]  ${color4}${battery_percent BAT0}%${color}
-  ${color1}Status  ·${color}  ${color4}${battery_status BAT0}${color}
+  ${color1}Charge  ·${color}  [${color2}${lua bat_bar}${color}]  ${color4}${lua bat_percent}%${color}
+  ${color1}Status  ·${color}  ${color4}${lua bat_status}${color}
   ${color3}·· Network ──────────────────────────────${color}
   ${color1}SSID    ·${color}  ${color4}${wireless_essid <<<WIFI_IFACE>>>}${color}
   ${color1}Signal  ·${color}  [${color1}${lua wifi_bar}${color}]  ${color4}${wireless_link_qual_perc <<<WIFI_IFACE>>>}%${color}
