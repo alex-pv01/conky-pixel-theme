@@ -158,9 +158,9 @@ def amd_conf():
 def nvidia_conf():
     return f"""
   \${color3}·· GPU  {NVIDIA_MODEL} ────────────────────────\${color}
-  \${execgraph "nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader,nounits 2>/dev/null | awk '{{printf \\"%d\\", \$1*100/\$2}}'" 35,285 228B22 FF4F00}\${goto 30}\${voffset 15}\${color1}VRAM\${color}  \${color4}\${lua nvidia_vram_mib} MiB · \${lua nvidia_vram_pct}%\${color}
+  \${execgraph "nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader,nounits 2>/dev/null | awk '{{print int(\$1*100/\$2)}}'" 35,285 228B22 FF4F00}\${goto 30}\${voffset 15}\${color1}VRAM\${color}  \${color4}\${lua nvidia_vram_mib} MiB · \${lua nvidia_vram_pct}%\${color}
 \${voffset -20}  \${execgraph "nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits 2>/dev/null | awk '{{v=(\$1-50)*2; print (v<0?0:v)}}'" 35,285 228B22 FF4F00 100}
-\${voffset -20}  \${goto 30}\${voffset -15}\${color1}Temp\${color}  \${color4}\${lua nvidia_temp}°C\${color}  \${color3}Pwr · \${exec nvidia-smi --query-gpu=power.draw --format=csv,noheader,nounits 2>/dev/null | awk '{{printf "%.0f", \$1}}'} W\${color}"""
+\${voffset -20}  \${goto 30}\${voffset -15}\${color1}Temp\${color}  \${color4}\${lua nvidia_temp}°C\${color}  \${color3}Pwr · \${exec nvidia-smi --query-gpu=power.draw --format=csv,noheader,nounits 2>/dev/null | awk '{{print int(\$1)}}'} W\${color}"""
 
 gpu_section = {"hybrid": amd_conf() + nvidia_conf(),
                "amd":    amd_conf(),
